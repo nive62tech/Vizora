@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+env/
+.env
+
+# Node
+node_modules/
+.cache/
+*.local
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Ollama models
+*.gguf
+*.bin
+ollama-models/
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build output
+/build
+/out
+
+# Vite
+.vite/
