@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "axios": "^1.16.1",
+    "plotly.js": "^3.5.1",
+    "react-dropzone": "^15.0.0",
+    "react-plotly.js": "^2.6.0",
+    "tailwindcss": "^4.3.0"
+  }
+}
