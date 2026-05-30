@@ -1,11 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'phase-4-ollama'))
-from app.services.ollama_service import ask_ollama
+import httpx
+import asyncio
 
 router = APIRouter()
 
@@ -19,6 +16,20 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
+
+
+async def ask_ollama(prompt: str, model: str = "tinyllama") -> str:
+    url = "http://localhost:11434/api/generate"
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "stream": False,
+    }
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        response = await client.post(url, json=payload)
+        response.raise_for_status()
+        data = response.json()
+        return data.get("response", "").strip()
 
 
 @router.post("/chat", response_model=ChatResponse)

@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import api from '../services/api'
 
 export default function useChat() {
   const [messages, setMessages] = useState([
     {
       id: 1,
       role: 'assistant',
-      content: 'Hi! Upload a CSV, Excel, or JSON file and I\'ll help you explore and visualize your data.',
+      content: "Hi! Upload a CSV, Excel, or JSON file and I'll help you explore and visualize your data.",
     }
   ])
   const [loading, setLoading] = useState(false)
@@ -22,22 +23,35 @@ export default function useChat() {
     setMessages((prev) => [...prev, userMessage])
     setLoading(true)
 
-    // Placeholder response until Phase 4 connects real AI
-    setTimeout(() => {
-      const reply = fileInfo
-        ? `You asked: "${text}"\n\nI can see your file "${fileInfo.filename}" has ${fileInfo.rows} rows and ${fileInfo.columns} columns: ${fileInfo.column_names.join(', ')}. AI responses will be live in Phase 4!`
-        : `You asked: "${text}"\n\nPlease upload a data file first so I can help you analyze it.`
+    try {
+      const response = await api.post('/chat', {
+        message: text,
+        column_names: fileInfo?.column_names || [],
+        preview: fileInfo?.preview || [],
+        filename: fileInfo?.filename || '',
+      })
 
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           role: 'assistant',
-          content: reply,
+          content: response.data.response,
         },
       ])
+    } catch (err) {
+      const errorMsg = err.response?.data?.detail || 'Something went wrong. Make sure Ollama is running.'
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          role: 'assistant',
+          content: `Error: ${errorMsg}`,
+        },
+      ])
+    } finally {
       setLoading(false)
-    }, 600)
+    }
   }
 
   return { messages, loading, sendMessage }
