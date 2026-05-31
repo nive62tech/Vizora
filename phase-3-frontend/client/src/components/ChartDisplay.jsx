@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react'
+import ExportButtons from './ExportButtons'
+import { exportChartAsPNG, exportChartAsHTML } from '../services/exportUtils'
 
 export default function ChartDisplay({ chart }) {
   const chartRef = useRef(null)
@@ -33,14 +35,33 @@ export default function ChartDisplay({ chart }) {
 
   if (!chart) return null
 
+  const handleExportPNG = async () => {
+    if (chartRef.current) {
+      await exportChartAsPNG(chartRef.current, chart.title)
+    }
+  }
+
+  const handleExportHTML = () => {
+    exportChartAsHTML(chart, chart.title)
+  }
+
+  const handleExportPDF = () => {
+    window.print()
+  }
+
   return (
     <div className="w-full bg-[#1a1d27] rounded-xl border border-gray-800 p-4 mt-2">
       <div className="flex items-center gap-2 mb-3">
         <span className="bg-blue-500/20 text-blue-300 text-xs font-bold px-2 py-1 rounded-full">
           #{chart.chart_number}
         </span>
-        <span className="text-gray-300 text-sm font-medium">{chart.title}</span>
-        <span className="text-gray-500 text-xs ml-auto">{chart.chart_type}</span>
+        <span className="text-gray-300 text-sm font-medium flex-1">{chart.title}</span>
+        <ExportButtons
+          onExportPNG={handleExportPNG}
+          onExportHTML={handleExportHTML}
+          onExportPDF={handleExportPDF}
+          size="small"
+        />
       </div>
       <div ref={chartRef} style={{ width: '100%', height: '350px' }} />
     </div>

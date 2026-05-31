@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { liveEditDashboard } from '../services/api'
+import ExportButtons from './ExportButtons'
+import { exportDashboardAsHTML, exportDashboardAsPDF } from '../services/exportUtils'
 
 function DashboardChart({ chart }) {
   const ref = useRef(null)
@@ -56,7 +58,7 @@ export default function DashboardView({ dashboard: initialDashboard, onClose, on
   const [title, setTitle] = useState(initialDashboard.title)
   const [chatInput, setChatInput] = useState('')
   const [chatMessages, setChatMessages] = useState([
-    { role: 'assistant', content: 'Dashboard is live! You can edit it by chatting here. Try: "add chart 3", "remove chart 1", "make chart 2 a line chart", or "rename this dashboard to Sales Report".' }
+    { role: 'assistant', content: 'Dashboard is live! Try: "add chart 3", "remove chart 1", "make chart 2 a line chart", or "rename this dashboard to Sales Report".' }
   ])
   const [chatLoading, setChatLoading] = useState(false)
   const chatBottomRef = useRef(null)
@@ -80,7 +82,6 @@ export default function DashboardView({ dashboard: initialDashboard, onClose, on
 
   const handleLiveEdit = async () => {
     if (!chatInput.trim() || chatLoading) return
-
     const userMsg = chatInput.trim()
     setChatInput('')
     setChatMessages(prev => [...prev, { role: 'user', content: userMsg }])
@@ -134,12 +135,17 @@ export default function DashboardView({ dashboard: initialDashboard, onClose, on
             {dashboard.charts.length} chart{dashboard.charts.length !== 1 ? 's' : ''} · Charts {dashboard.chart_numbers.join(', ')}
           </p>
         </div>
-        <button onClick={onClose} className="text-gray-600 hover:text-gray-400 text-sm transition-colors">
+        <ExportButtons
+          onExportPNG={() => alert('Use PNG button on individual charts')}
+          onExportHTML={() => exportDashboardAsHTML(dashboard)}
+          onExportPDF={() => exportDashboardAsPDF(dashboard)}
+        />
+        <button onClick={onClose} className="text-gray-600 hover:text-gray-400 text-sm transition-colors ml-2">
           ✕ Close
         </button>
       </div>
 
-      {/* Main area — charts + live chat side by side */}
+      {/* Main area */}
       <div className="flex flex-1 overflow-hidden">
 
         {/* Charts grid */}
@@ -159,7 +165,6 @@ export default function DashboardView({ dashboard: initialDashboard, onClose, on
 
         {/* Live edit chat panel */}
         <div className="w-72 border-l border-gray-800 bg-[#1a1d27] flex flex-col shrink-0">
-
           <div className="px-4 py-3 border-b border-gray-800">
             <p className="text-gray-300 text-xs font-medium uppercase tracking-wider">Live Edit</p>
             <p className="text-gray-500 text-xs mt-0.5">Chat to edit this dashboard</p>
@@ -210,7 +215,6 @@ export default function DashboardView({ dashboard: initialDashboard, onClose, on
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </div>
