@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import MessageBubble from './MessageBubble'
+import ChartDisplay from './ChartDisplay'
 
-export default function ChatWindow({ messages, loading, onSendMessage, fileInfo }) {
+export default function ChatWindow({ messages, loading, onSendMessage, fileInfo, selectedChart, onClearSelectedChart }) {
   const [input, setInput] = useState('')
   const bottomRef = useRef(null)
 
@@ -36,6 +37,24 @@ export default function ChatWindow({ messages, loading, onSendMessage, fileInfo 
           </p>
         )}
       </div>
+
+      {/* Selected chart from sidebar */}
+      {selectedChart && (
+        <div className="px-6 pt-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">
+              Viewing from library
+            </p>
+            <button
+              onClick={onClearSelectedChart}
+              className="text-gray-600 hover:text-gray-400 text-xs transition-colors"
+            >
+              ✕ Close
+            </button>
+          </div>
+          <ChartDisplay chart={selectedChart} />
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-3">

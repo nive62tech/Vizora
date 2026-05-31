@@ -29,4 +29,27 @@ export const generateChart = async (message, fileInfo) => {
   return response.data
 }
 
+export const saveChart = async (chart, filename) => {
+  const response = await api.post('/library/save', {
+    ...chart,
+    filename,
+  })
+  return response.data
+}
+
+export const getAllCharts = async () => {
+  const response = await api.get('/library/charts')
+  return response.data.charts
+}
+
+export const deleteChart = async (chartId) => {
+  const response = await api.delete(`/library/charts/${chartId}`)
+  return response.data
+}
+
+export const renameChart = async (chartId, title) => {
+  const response = await api.patch(`/library/charts/${chartId}`, { title })
+  return response.data
+}
+
 export default api

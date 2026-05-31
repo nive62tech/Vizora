@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import api, { generateChart } from '../services/api'
+import api, { generateChart, saveChart } from '../services/api'
 
 const CHART_KEYWORDS = ['chart', 'plot', 'graph', 'visualize', 'visualise', 'bar', 'line', 'pie', 'scatter', 'histogram', 'show me']
 
@@ -8,7 +8,7 @@ function isChartRequest(message) {
   return CHART_KEYWORDS.some(keyword => lower.includes(keyword))
 }
 
-export default function useChat() {
+export default function useChat(onChartSaved) {
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -32,20 +32,24 @@ export default function useChat() {
 
     try {
       if (isChartRequest(text) && fileInfo) {
-        // Generate a chart
         const chartData = await generateChart(text, fileInfo)
+
+        // Auto-save to library
+        await saveChart(chartData, fileInfo.filename)
+
+        // Notify parent so sidebar refreshes
+        if (onChartSaved) onChartSaved()
 
         setMessages((prev) => [
           ...prev,
           {
             id: Date.now() + 1,
             role: 'assistant',
-            content: `Here's ${chartData.title} — a ${chartData.chart_type} chart showing ${chartData.y_col} by ${chartData.x_col}.`,
+            content: `Here's ${chartData.title} — a ${chartData.chart_type} chart showing ${chartData.y_col} by ${chartData.x_col}. It's been saved to your chart library!`,
             chart: chartData,
           },
         ])
       } else {
-        // Regular AI chat
         const response = await api.post('/chat', {
           message: text,
           column_names: fileInfo?.column_names || [],

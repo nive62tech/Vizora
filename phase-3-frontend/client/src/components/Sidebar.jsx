@@ -1,8 +1,9 @@
 import FileDropZone from './FileDropZone'
+import ChartLibrary from './ChartLibrary'
 
-export default function Sidebar({ fileInfo, onFileUploaded }) {
+export default function Sidebar({ fileInfo, onFileUploaded, charts, onSelectChart, onDeleteChart, onRenameChart }) {
   return (
-    <div className="w-72 h-screen bg-[#1a1d27] border-r border-gray-800 flex flex-col p-4 gap-4 shrink-0">
+    <div className="w-72 h-screen bg-[#1a1d27] border-r border-gray-800 flex flex-col p-4 gap-4 shrink-0 overflow-y-auto">
 
       {/* Logo */}
       <div className="flex items-center gap-2 pb-3 border-b border-gray-800">
@@ -22,11 +23,10 @@ export default function Sidebar({ fileInfo, onFileUploaded }) {
 
       {/* File Info */}
       {fileInfo && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">
             File Info
           </p>
-
           <div className="bg-[#0f1117] rounded-lg p-3 flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <span className="text-green-400 text-xs">✓</span>
@@ -34,13 +34,11 @@ export default function Sidebar({ fileInfo, onFileUploaded }) {
                 {fileInfo.filename}
               </span>
             </div>
-
             <div className="flex gap-3 text-xs text-gray-400">
               <span>{fileInfo.rows} rows</span>
               <span>•</span>
               <span>{fileInfo.columns} columns</span>
             </div>
-
             <div className="mt-1">
               <p className="text-gray-500 text-xs mb-1">Columns:</p>
               <div className="flex flex-wrap gap-1">
@@ -57,6 +55,14 @@ export default function Sidebar({ fileInfo, onFileUploaded }) {
           </div>
         </div>
       )}
+
+      {/* Chart Library */}
+      <ChartLibrary
+        charts={charts}
+        onSelectChart={onSelectChart}
+        onDeleteChart={onDeleteChart}
+        onRenameChart={onRenameChart}
+      />
 
       {/* Bottom */}
       <div className="mt-auto pt-3 border-t border-gray-800">
