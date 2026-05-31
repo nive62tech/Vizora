@@ -69,4 +69,12 @@ export const renameDashboard = async (dashboardId, title) => {
   return response.data
 }
 
+export const liveEditDashboard = async (message, dashboardId) => {
+  const response = await api.post('/dashboard/edit', {
+    message,
+    dashboard_id: dashboardId,
+  })
+  return response.data
+}
+
 export default api
