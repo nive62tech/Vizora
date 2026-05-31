@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import health, upload
 from phase4_chat import chat as chat_route
+from phase5_charts import charts as charts_route
 
 app = FastAPI(
     title="Vizora API",
@@ -20,6 +21,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(upload.router)
 app.include_router(chat_route.router)
+app.include_router(charts_route.router)
 
 
 @app.get("/")

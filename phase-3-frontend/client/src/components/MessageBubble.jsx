@@ -1,8 +1,10 @@
+import ChartDisplay from './ChartDisplay'
+
 export default function MessageBubble({ message }) {
   const isUser = message.role === 'user'
 
   return (
-    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex flex-col w-full ${isUser ? 'items-end' : 'items-start'}`}>
       <div
         className={`
           max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed
@@ -14,6 +16,7 @@ export default function MessageBubble({ message }) {
       >
         {message.content}
       </div>
+      {message.chart && <ChartDisplay chart={message.chart} />}
     </div>
   )
 }
