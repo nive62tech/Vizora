@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import Sidebar from '../components/Sidebar'
 import ChatWindow from '../components/ChatWindow'
+import DashboardView from '../components/DashboardView'
 import useChat from '../hooks/useChat'
-import { getAllCharts, deleteChart } from '../services/api'
+import { getAllCharts, deleteChart, getAllDashboards, deleteDashboard, renameDashboard } from '../services/api'
 
 export default function Home() {
   const [fileInfo, setFileInfo] = useState(null)
   const [charts, setCharts] = useState([])
   const [selectedChart, setSelectedChart] = useState(null)
+  const [activeDashboard, setActiveDashboard] = useState(null)
+  const [dashboards, setDashboards] = useState([])
 
   const fetchCharts = useCallback(async () => {
     try {
@@ -18,13 +21,29 @@ export default function Home() {
     }
   }, [])
 
+  const fetchDashboards = useCallback(async () => {
+    try {
+      const data = await getAllDashboards()
+      setDashboards(data)
+    } catch (err) {
+      console.error('Failed to fetch dashboards', err)
+    }
+  }, [])
+
   useEffect(() => {
     fetchCharts()
-  }, [fetchCharts])
+    fetchDashboards()
+  }, [fetchCharts, fetchDashboards])
 
   const handleChartSaved = useCallback(() => {
     fetchCharts()
   }, [fetchCharts])
+
+  const handleDashboardBuilt = useCallback((dashboard) => {
+    setActiveDashboard(dashboard)
+    setSelectedChart(null)
+    fetchDashboards()
+  }, [fetchDashboards])
 
   const handleDeleteChart = async (chartId) => {
     try {
@@ -36,7 +55,36 @@ export default function Home() {
     }
   }
 
-  const { messages, loading, sendMessage } = useChat(handleChartSaved)
+  const handleRenameDashboard = async (dashboardId, title) => {
+    try {
+      await renameDashboard(dashboardId, title)
+      fetchDashboards()
+      if (activeDashboard?.id === dashboardId) {
+        setActiveDashboard(prev => ({ ...prev, title }))
+      }
+    } catch (err) {
+      console.error('Failed to rename dashboard', err)
+    }
+  }
+
+  const { messages, loading, sendMessage } = useChat(handleChartSaved, handleDashboardBuilt)
+
+  const mainContent = activeDashboard ? (
+    <DashboardView
+      dashboard={activeDashboard}
+      onClose={() => setActiveDashboard(null)}
+      onRename={handleRenameDashboard}
+    />
+  ) : (
+    <ChatWindow
+      messages={messages}
+      loading={loading}
+      onSendMessage={sendMessage}
+      fileInfo={fileInfo}
+      selectedChart={selectedChart}
+      onClearSelectedChart={() => setSelectedChart(null)}
+    />
+  )
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -44,18 +92,24 @@ export default function Home() {
         fileInfo={fileInfo}
         onFileUploaded={setFileInfo}
         charts={charts}
-        onSelectChart={setSelectedChart}
+        onSelectChart={(chart) => {
+          setSelectedChart(chart)
+          setActiveDashboard(null)
+        }}
         onDeleteChart={handleDeleteChart}
         onRenameChart={() => {}}
+        dashboards={dashboards}
+        onSelectDashboard={(d) => {
+          setActiveDashboard(d)
+          setSelectedChart(null)
+        }}
+        onDeleteDashboard={async (id) => {
+          await deleteDashboard(id)
+          fetchDashboards()
+          if (activeDashboard?.id === id) setActiveDashboard(null)
+        }}
       />
-      <ChatWindow
-        messages={messages}
-        loading={loading}
-        onSendMessage={sendMessage}
-        fileInfo={fileInfo}
-        selectedChart={selectedChart}
-        onClearSelectedChart={() => setSelectedChart(null)}
-      />
+      {mainContent}
     </div>
   )
 }

@@ -4,6 +4,7 @@ from routes import health, upload
 from phase4_chat import chat as chat_route
 from phase5_charts import charts as charts_route
 from phase6_library import library as library_route
+from phase7_dashboard import dashboard as dashboard_route
 
 app = FastAPI(
     title="Vizora API",
@@ -24,6 +25,7 @@ app.include_router(upload.router)
 app.include_router(chat_route.router)
 app.include_router(charts_route.router)
 app.include_router(library_route.router)
+app.include_router(dashboard_route.router)
 
 
 @app.get("/")

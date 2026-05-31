@@ -1,19 +1,23 @@
 import { useState } from 'react'
-import api, { generateChart, saveChart } from '../services/api'
+import api, { generateChart, saveChart, buildDashboard } from '../services/api'
 
 const CHART_KEYWORDS = ['chart', 'plot', 'graph', 'visualize', 'visualise', 'bar', 'line', 'pie', 'scatter', 'histogram', 'show me']
 
 function isChartRequest(message) {
   const lower = message.toLowerCase()
-  return CHART_KEYWORDS.some(keyword => lower.includes(keyword))
+  return CHART_KEYWORDS.some(keyword => lower.includes(keyword)) && !lower.includes('dashboard')
 }
 
-export default function useChat(onChartSaved) {
+function isDashboardRequest(message) {
+  return message.toLowerCase().includes('dashboard')
+}
+
+export default function useChat(onChartSaved, onDashboardBuilt) {
   const [messages, setMessages] = useState([
     {
       id: 1,
       role: 'assistant',
-      content: "Hi! Upload a CSV, Excel, or JSON file and I'll help you explore and visualize your data. Ask me to create charts or analyze your data!",
+      content: "Hi! Upload a CSV, Excel, or JSON file and I'll help you explore and visualize your data. Ask me to create charts or say 'create a dashboard with charts 1, 2 and 3'!",
     }
   ])
   const [loading, setLoading] = useState(false)
@@ -31,13 +35,26 @@ export default function useChat(onChartSaved) {
     setLoading(true)
 
     try {
-      if (isChartRequest(text) && fileInfo) {
+      if (isDashboardRequest(text)) {
+        // Build dashboard
+        const dashboard = await buildDashboard(text)
+
+        if (onDashboardBuilt) onDashboardBuilt(dashboard)
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            role: 'assistant',
+            content: `Dashboard "${dashboard.title}" built with ${dashboard.charts.length} chart${dashboard.charts.length !== 1 ? 's' : ''} (${dashboard.chart_numbers.map(n => '#' + n).join(', ')}). You can see it in the main area!`,
+            dashboard,
+          },
+        ])
+
+      } else if (isChartRequest(text) && fileInfo) {
+        // Generate chart
         const chartData = await generateChart(text, fileInfo)
-
-        // Auto-save to library
         await saveChart(chartData, fileInfo.filename)
-
-        // Notify parent so sidebar refreshes
         if (onChartSaved) onChartSaved()
 
         setMessages((prev) => [
@@ -45,11 +62,13 @@ export default function useChat(onChartSaved) {
           {
             id: Date.now() + 1,
             role: 'assistant',
-            content: `Here's ${chartData.title} — a ${chartData.chart_type} chart showing ${chartData.y_col} by ${chartData.x_col}. It's been saved to your chart library!`,
+            content: `Here's ${chartData.title} — a ${chartData.chart_type} chart showing ${chartData.y_col} by ${chartData.x_col}. Saved to your chart library!`,
             chart: chartData,
           },
         ])
+
       } else {
+        // Regular AI chat
         const response = await api.post('/chat', {
           message: text,
           column_names: fileInfo?.column_names || [],

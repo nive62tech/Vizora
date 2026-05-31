@@ -30,10 +30,7 @@ export const generateChart = async (message, fileInfo) => {
 }
 
 export const saveChart = async (chart, filename) => {
-  const response = await api.post('/library/save', {
-    ...chart,
-    filename,
-  })
+  const response = await api.post('/library/save', { ...chart, filename })
   return response.data
 }
 
@@ -49,6 +46,26 @@ export const deleteChart = async (chartId) => {
 
 export const renameChart = async (chartId, title) => {
   const response = await api.patch(`/library/charts/${chartId}`, { title })
+  return response.data
+}
+
+export const buildDashboard = async (message) => {
+  const response = await api.post('/dashboard/build', { message })
+  return response.data
+}
+
+export const getAllDashboards = async () => {
+  const response = await api.get('/dashboard/all')
+  return response.data.dashboards
+}
+
+export const deleteDashboard = async (dashboardId) => {
+  const response = await api.delete(`/dashboard/${dashboardId}`)
+  return response.data
+}
+
+export const renameDashboard = async (dashboardId, title) => {
+  const response = await api.patch(`/dashboard/${dashboardId}`, { title })
   return response.data
 }
 
