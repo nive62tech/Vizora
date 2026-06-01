@@ -41,15 +41,43 @@ def suggest_chart(message: str, column_names: List[str]) -> dict:
     else:
         chart_type = "bar"
 
+    # Check if user specified columns in the message
+    mentioned_cols = []
+    for col in column_names:
+        if col.lower() in message_lower:
+            mentioned_cols.append(col)
+
+    if len(mentioned_cols) >= 2:
+        x_col = mentioned_cols[0]
+        y_col = mentioned_cols[1]
+        return {"chart_type": chart_type, "x_col": x_col, "y_col": y_col}
+
+    if len(mentioned_cols) == 1:
+        other_cols = [c for c in column_names if c != mentioned_cols[0]]
+        x_col = mentioned_cols[0]
+        y_col = other_cols[0] if other_cols else column_names[-1]
+        return {"chart_type": chart_type, "x_col": x_col, "y_col": y_col}
+
+    # Auto detect numeric and text columns
+    numeric_keywords = ['age', 'salary', 'price', 'count', 'amount', 'value',
+                        'score', 'total', 'num', 'qty', 'revenue', 'cost',
+                        'rate', 'percent', 'ratio', 'income', 'profit', 'loss',
+                        'quantity', 'weight', 'height', 'size', 'rank']
+
     numeric_cols = []
     text_cols = []
 
     for col in column_names:
         col_lower = col.lower()
-        if any(word in col_lower for word in ['age', 'salary', 'price', 'count', 'amount', 'value', 'score', 'total', 'num', 'qty']):
+        if any(word in col_lower for word in numeric_keywords):
             numeric_cols.append(col)
         else:
             text_cols.append(col)
+
+    # If no numeric cols detected, treat last col as numeric
+    if not numeric_cols:
+        numeric_cols = [column_names[-1]]
+        text_cols = column_names[:-1]
 
     x_col = text_cols[0] if text_cols else column_names[0]
     y_col = numeric_cols[0] if numeric_cols else column_names[-1]

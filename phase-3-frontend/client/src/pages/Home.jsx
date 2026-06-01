@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Sidebar from '../components/Sidebar'
 import ChatWindow from '../components/ChatWindow'
 import DashboardView from '../components/DashboardView'
+import LANBanner from '../components/LANBanner'
 import useChat from '../hooks/useChat'
 import { getAllCharts, deleteChart, getAllDashboards, deleteDashboard, renameDashboard } from '../services/api'
 
@@ -87,29 +88,32 @@ export default function Home() {
   )
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar
-        fileInfo={fileInfo}
-        onFileUploaded={setFileInfo}
-        charts={charts}
-        onSelectChart={(chart) => {
-          setSelectedChart(chart)
-          setActiveDashboard(null)
-        }}
-        onDeleteChart={handleDeleteChart}
-        onRenameChart={() => {}}
-        dashboards={dashboards}
-        onSelectDashboard={(d) => {
-          setActiveDashboard(d)
-          setSelectedChart(null)
-        }}
-        onDeleteDashboard={async (id) => {
-          await deleteDashboard(id)
-          fetchDashboards()
-          if (activeDashboard?.id === id) setActiveDashboard(null)
-        }}
-      />
-      {mainContent}
+    <div className="flex flex-col h-screen overflow-hidden">
+      <LANBanner />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar
+          fileInfo={fileInfo}
+          onFileUploaded={setFileInfo}
+          charts={charts}
+          onSelectChart={(chart) => {
+            setSelectedChart(chart)
+            setActiveDashboard(null)
+          }}
+          onDeleteChart={handleDeleteChart}
+          onRenameChart={() => {}}
+          dashboards={dashboards}
+          onSelectDashboard={(d) => {
+            setActiveDashboard(d)
+            setSelectedChart(null)
+          }}
+          onDeleteDashboard={async (id) => {
+            await deleteDashboard(id)
+            fetchDashboards()
+            if (activeDashboard?.id === id) setActiveDashboard(null)
+          }}
+        />
+        {mainContent}
+      </div>
     </div>
   )
 }

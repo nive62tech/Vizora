@@ -5,6 +5,7 @@ import ChartDisplay from './ChartDisplay'
 export default function ChatWindow({ messages, loading, onSendMessage, fileInfo, selectedChart, onClearSelectedChart }) {
   const [input, setInput] = useState('')
   const bottomRef = useRef(null)
+  const inputRef = useRef(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -14,6 +15,7 @@ export default function ChatWindow({ messages, loading, onSendMessage, fileInfo,
     if (!input.trim() || loading) return
     onSendMessage(input, fileInfo)
     setInput('')
+    setTimeout(() => inputRef.current?.focus(), 100)
   }
 
   const handleKeyDown = (e) => {
@@ -84,11 +86,12 @@ export default function ChatWindow({ messages, loading, onSendMessage, fileInfo,
         )}
         <div className="flex gap-3 items-end">
           <textarea
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={fileInfo ? 'Ask something about your data...' : 'Upload a file first...'}
-            disabled={!fileInfo || loading}
+            disabled={!fileInfo}
             rows={1}
             className="flex-1 bg-[#0f1117] border border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           />

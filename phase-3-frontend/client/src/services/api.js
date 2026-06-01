@@ -102,4 +102,9 @@ export const resetModelSelection = async () => {
   return response.data
 }
 
+export const getLanInfo = async () => {
+  const response = await api.get('/lan/info')
+  return response.data
+}
+
 export default api
