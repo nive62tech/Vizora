@@ -77,4 +77,29 @@ export const liveEditDashboard = async (message, dashboardId) => {
   return response.data
 }
 
+export const getAvailableModels = async () => {
+  const response = await api.get('/models/available')
+  return response.data.models
+}
+
+export const getCurrentModel = async () => {
+  const response = await api.get('/models/current')
+  return response.data
+}
+
+export const selectModel = async (modelKey) => {
+  const response = await api.post('/models/select', { model_key: modelKey })
+  return response.data
+}
+
+export const checkOllama = async () => {
+  const response = await api.get('/models/check-ollama')
+  return response.data
+}
+
+export const resetModelSelection = async () => {
+  const response = await api.post('/models/reset')
+  return response.data
+}
+
 export default api

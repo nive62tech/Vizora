@@ -92,7 +92,17 @@ export default function Sidebar({
       />
 
       {/* Bottom */}
-      <div className="mt-auto pt-3 border-t border-gray-800">
+      <div className="mt-auto pt-3 border-t border-gray-800 flex flex-col gap-2">
+        <button
+          onClick={async () => {
+            const { resetModelSelection } = await import('../services/api')
+            await resetModelSelection()
+            window.location.reload()
+          }}
+          className="text-gray-600 hover:text-gray-400 text-xs text-center transition-colors"
+        >
+          ⚙️ Change AI model
+        </button>
         <p className="text-gray-600 text-xs text-center">
           Fully local • No cloud • Private
         </p>
