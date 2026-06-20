@@ -47,3 +47,16 @@ npm-debug.log*
 
 # Vite
 .vite/
+
+
+
+# Packed sharing files
+Vizora-share.zip
+*.zip
+
+# Runtime data files
+phase-2-backend/app/chart_library.json
+phase-2-backend/app/dashboards.json
+phase-2-backend/app/chart_counter.json
+phase-2-backend/app/vizora_config.json
+phase-2-backend/app/uploads/
