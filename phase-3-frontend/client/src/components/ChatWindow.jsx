@@ -25,6 +25,8 @@ export default function ChatWindow({ messages, loading, onSendMessage, fileInfo,
     }
   }
 
+  const showEmptyState = messages.length <= 1 && !fileInfo
+
   return (
     <div className="flex flex-col h-screen flex-1 bg-[#0f1117]">
 
@@ -58,11 +60,46 @@ export default function ChatWindow({ messages, loading, onSendMessage, fileInfo,
         </div>
       )}
 
-      {/* Messages */}
+      {/* Messages or empty state */}
       <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-3">
-        {messages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} />
-        ))}
+
+        {showEmptyState ? (
+          <div className="flex flex-col items-center justify-center h-full gap-6 text-center">
+            <div className="w-16 h-16 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-3xl">
+              📊
+            </div>
+            <div>
+              <h2 className="text-white font-semibold text-lg mb-2">Welcome to Vizora</h2>
+              <p className="text-gray-400 text-sm max-w-sm">
+                Drop a CSV, Excel, or JSON file in the sidebar to get started. Then chat with your data in plain English.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 max-w-md w-full">
+              {[
+                { icon: '📈', text: 'Show me a bar chart' },
+                { icon: '🥧', text: 'Create a pie chart' },
+                { icon: '📋', text: 'Summarize this data' },
+                { icon: '🎯', text: 'What are the top values?' },
+              ].map((hint) => (
+                <div
+                  key={hint.text}
+                  className="bg-[#1a1d27] border border-gray-800 rounded-xl px-4 py-3 text-left cursor-pointer hover:border-gray-600 transition-colors"
+                  onClick={() => fileInfo && onSendMessage(hint.text, fileInfo)}
+                >
+                  <span className="text-lg">{hint.icon}</span>
+                  <p className="text-gray-300 text-xs mt-1">{hint.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            {messages.map((msg) => (
+              <MessageBubble key={msg.id} message={msg} />
+            ))}
+          </>
+        )}
+
         {loading && (
           <div className="flex justify-start">
             <div className="bg-[#1a1d27] border border-gray-800 rounded-2xl rounded-bl-sm px-4 py-3">
@@ -81,7 +118,7 @@ export default function ChatWindow({ messages, loading, onSendMessage, fileInfo,
       <div className="px-6 py-4 border-t border-gray-800 bg-[#1a1d27]">
         {!fileInfo && (
           <p className="text-yellow-500/70 text-xs mb-2 text-center">
-            Upload a file in the sidebar to start analyzing your data
+            ⬅ Upload a file in the sidebar to start analyzing your data
           </p>
         )}
         <div className="flex gap-3 items-end">
