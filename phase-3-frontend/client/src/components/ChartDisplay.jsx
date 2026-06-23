@@ -17,8 +17,10 @@ export default function ChartDisplay({ chart }) {
           autosize: true,
           margin: { l: 40, r: 20, t: 40, b: 40 },
           paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(26,29,39,1)',
-          font: { color: '#e2e8f0' },
+          plot_bgcolor: 'rgba(8,11,20,0.6)',
+          font: { color: '#94A3B8', size: 11 },
+          xaxis: { gridcolor: 'rgba(255,255,255,0.05)', color: '#64748B', zerolinecolor: 'rgba(255,255,255,0.05)' },
+          yaxis: { gridcolor: 'rgba(255,255,255,0.05)', color: '#64748B', zerolinecolor: 'rgba(255,255,255,0.05)' },
         },
         { responsive: true, displayModeBar: false }
       )
@@ -35,35 +37,30 @@ export default function ChartDisplay({ chart }) {
 
   if (!chart) return null
 
-  const handleExportPNG = async () => {
-    if (chartRef.current) {
-      await exportChartAsPNG(chartRef.current, chart.title)
-    }
-  }
-
-  const handleExportHTML = () => {
-    exportChartAsHTML(chart, chart.title)
-  }
-
-  const handleExportPDF = () => {
-    window.print()
-  }
-
   return (
-    <div className="w-full bg-[#1a1d27] rounded-xl border border-gray-800 p-4 mt-2">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="bg-blue-500/20 text-blue-300 text-xs font-bold px-2 py-1 rounded-full">
+    <div className="w-full rounded-2xl border overflow-hidden animate-fade-up"
+      style={{
+        background: 'rgba(13,17,23,0.9)',
+        borderColor: 'rgba(59,130,246,0.15)',
+        boxShadow: '0 0 40px rgba(59,130,246,0.05)',
+      }}>
+      <div className="flex items-center gap-2 px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+        <span className="text-xs font-bold px-2 py-0.5 rounded-full"
+          style={{ background: 'rgba(59,130,246,0.15)', color: '#93C5FD' }}>
           #{chart.chart_number}
         </span>
-        <span className="text-gray-300 text-sm font-medium flex-1">{chart.title}</span>
+        <span className="text-xs font-medium flex-1 truncate" style={{ color: '#94A3B8' }}>{chart.title}</span>
+        <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.05)', color: '#64748B' }}>
+          {chart.chart_type}
+        </span>
         <ExportButtons
-          onExportPNG={handleExportPNG}
-          onExportHTML={handleExportHTML}
-          onExportPDF={handleExportPDF}
+          onExportPNG={async () => chartRef.current && await exportChartAsPNG(chartRef.current, chart.title)}
+          onExportHTML={() => exportChartAsHTML(chart, chart.title)}
+          onExportPDF={() => window.print()}
           size="small"
         />
       </div>
-      <div ref={chartRef} style={{ width: '100%', height: '350px' }} />
+      <div ref={chartRef} style={{ width: '100%', height: '320px' }} />
     </div>
   )
 }

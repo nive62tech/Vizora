@@ -7,104 +7,120 @@ export default function Sidebar({
   dashboards, onSelectDashboard, onDeleteDashboard
 }) {
   return (
-    <div className="w-72 h-screen bg-[#1a1d27] border-r border-gray-800 flex flex-col p-4 gap-4 shrink-0 overflow-y-auto">
+    <div className="shrink-0 flex flex-col h-full overflow-y-auto"
+      style={{
+        width: '260px',
+        background: 'rgba(13,17,23,0.95)',
+        borderRight: '1px solid var(--border)',
+        backdropFilter: 'blur(20px)',
+        zIndex: 10,
+      }}>
 
       {/* Logo */}
-      <div className="flex items-center gap-2 pb-3 border-b border-gray-800">
-        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+      <div className="flex items-center gap-2.5 px-4 py-4 border-b shrink-0" style={{ borderColor: 'var(--border)' }}>
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-black text-sm shrink-0"
+          style={{ background: 'linear-gradient(135deg, #3B82F6, #06B6D4)', boxShadow: '0 0 16px rgba(59,130,246,0.4)' }}>
           V
         </div>
-        <span className="text-white font-semibold text-lg">Vizora</span>
+        <span className="font-bold text-base" style={{ color: 'var(--text)', letterSpacing: '-0.5px' }}>Vizora</span>
+        <div className="ml-auto flex items-center gap-1">
+          <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#22C55E', boxShadow: '0 0 6px #22C55E' }}></div>
+          <span className="text-xs" style={{ color: 'var(--muted)' }}>local</span>
+        </div>
       </div>
 
-      {/* File Drop */}
-      <div>
-        <p className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">
-          Data Source
-        </p>
-        <FileDropZone onFileUploaded={onFileUploaded} />
-      </div>
+      <div className="flex flex-col gap-4 p-4 flex-1">
 
-      {/* File Info */}
-      {fileInfo && (
-        <div className="flex flex-col gap-2">
-          <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">
-            File Info
+        {/* Data Source */}
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--muted)', letterSpacing: '1.5px' }}>
+            Data Source
           </p>
-          <div className="bg-[#0f1117] rounded-lg p-3 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-green-400 text-xs">✓</span>
-              <span className="text-gray-200 text-sm font-medium truncate">{fileInfo.filename}</span>
+          <FileDropZone onFileUploaded={onFileUploaded} />
+        </div>
+
+        {/* File Info */}
+        {fileInfo && (
+          <div className="rounded-xl p-3 border animate-fade-up"
+            style={{ background: 'rgba(59,130,246,0.06)', borderColor: 'rgba(59,130,246,0.15)' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <span style={{ color: '#22C55E', fontSize: '12px' }}>✓</span>
+              <span className="text-xs font-semibold truncate" style={{ color: 'var(--text)' }}>{fileInfo.filename}</span>
             </div>
-            <div className="flex gap-3 text-xs text-gray-400">
-              <span>{fileInfo.rows} rows</span>
-              <span>•</span>
-              <span>{fileInfo.columns} columns</span>
+            <div className="flex gap-3 text-xs mb-2" style={{ color: 'var(--muted)' }}>
+              <span>{fileInfo.rows.toLocaleString()} rows</span>
+              <span>·</span>
+              <span>{fileInfo.columns} cols</span>
             </div>
-            <div className="mt-1">
-              <p className="text-gray-500 text-xs mb-1">Columns:</p>
-              <div className="flex flex-wrap gap-1">
-                {fileInfo.column_names.map((col) => (
-                  <span key={col} className="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded-full">
-                    {col}
-                  </span>
-                ))}
-              </div>
+            <div className="flex flex-wrap gap-1">
+              {fileInfo.column_names.map((col) => (
+                <span key={col} className="text-xs px-2 py-0.5 rounded-full"
+                  style={{ background: 'rgba(59,130,246,0.15)', color: '#93C5FD' }}>
+                  {col}
+                </span>
+              ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Dashboards */}
-      {dashboards && dashboards.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <p className="text-gray-400 text-xs font-medium uppercase tracking-wider">
-            Dashboards ({dashboards.length})
-          </p>
-          {dashboards.map((d) => (
-            <div
-              key={d.id}
-              className="bg-[#0f1117] rounded-lg border border-gray-800 px-3 py-2 flex items-center gap-2 cursor-pointer hover:border-blue-500/50 transition-colors"
-              onClick={() => onSelectDashboard(d)}
-            >
-              <span className="text-lg">📊</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-gray-200 text-xs font-medium truncate">{d.title}</p>
-                <p className="text-gray-500 text-xs">{d.charts.length} charts</p>
-              </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); onDeleteDashboard(d.id) }}
-                className="text-gray-600 hover:text-red-400 text-xs transition-colors shrink-0"
-              >
-                ✕
-              </button>
+        {/* Dashboards */}
+        {dashboards && dashboards.length > 0 && (
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--muted)', letterSpacing: '1.5px' }}>
+              Dashboards ({dashboards.length})
+            </p>
+            <div className="flex flex-col gap-1.5">
+              {dashboards.map((d) => (
+                <div key={d.id}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer transition-all"
+                  style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'var(--border)' }}
+                  onClick={() => onSelectDashboard(d)}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(59,130,246,0.3)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                >
+                  <span className="text-sm">📊</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate" style={{ color: 'var(--text)' }}>{d.title}</p>
+                    <p className="text-xs" style={{ color: 'var(--muted)' }}>{d.charts.length} charts</p>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onDeleteDashboard(d.id) }}
+                    className="text-xs opacity-30 hover:opacity-100 transition-opacity shrink-0"
+                    style={{ color: '#EF4444' }}
+                  >✕</button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Chart Library */}
-      <ChartLibrary
-        charts={charts}
-        onSelectChart={onSelectChart}
-        onDeleteChart={onDeleteChart}
-        onRenameChart={onRenameChart}
-      />
+        {/* Chart Library */}
+        <ChartLibrary
+          charts={charts}
+          onSelectChart={onSelectChart}
+          onDeleteChart={onDeleteChart}
+          onRenameChart={onRenameChart}
+        />
+
+      </div>
 
       {/* Bottom */}
-      <div className="mt-auto pt-3 border-t border-gray-800 flex flex-col gap-2">
+      <div className="px-4 py-3 border-t shrink-0" style={{ borderColor: 'var(--border)' }}>
         <button
           onClick={async () => {
             const { resetModelSelection } = await import('../services/api')
             await resetModelSelection()
             window.location.reload()
           }}
-          className="text-gray-600 hover:text-gray-400 text-xs text-center transition-colors"
+          className="w-full text-xs py-2 rounded-xl border transition-all"
+          style={{ color: 'var(--muted)', borderColor: 'var(--border)', background: 'transparent' }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(59,130,246,0.3)'; e.currentTarget.style.color = 'var(--muted2)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted)' }}
         >
           ⚙️ Change AI model
         </button>
-        <p className="text-gray-600 text-xs text-center">
-          Fully local • No cloud • Private
+        <p className="text-xs text-center mt-2" style={{ color: 'var(--muted)' }}>
+          Local · Private · No cloud
         </p>
       </div>
 

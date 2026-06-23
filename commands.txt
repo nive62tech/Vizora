@@ -10,7 +10,7 @@ Frontend Running:
 cd D:\projects\Vizora\phase-3-frontend\client
 npm run dev
 
-
+http://localhost:5173/
 
 cd D:\projects\Vizora\phase-2-backend
 venv\Scripts\activate
